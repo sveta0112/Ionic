@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Feedback, ContactType } from '../../shared/feedback';
 
 /**
  * Generated class for the ContactPage page.
@@ -14,6 +15,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'contact.html',
 })
 export class ContactPage {
+  contacttype = ContactType;
+  errMess: string;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
