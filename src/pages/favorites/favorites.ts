@@ -1,7 +1,8 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ItemSliding } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ItemSliding, ToastController, LoadingController, AlertController, Alert } from 'ionic-angular';
 import { FavoriteProvider } from '../../providers/favorite/favorite';
 import { Dish } from '../../shared/dish';
+
 
 
 /**
@@ -22,6 +23,9 @@ export class FavoritesPage implements OnInit{
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private favoriteservice: FavoriteProvider,
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
     @Inject('BaseURL') private BaseURL) {
   }
 
@@ -38,9 +42,42 @@ export class FavoritesPage implements OnInit{
 
   deleteFavorite(item: ItemSliding, id: number) {
     console.log('delete: ', id);
-    this.favoriteservice.deleteFavorite(id)
-      .subscribe(favorites => this.favorites = favorites,
-        errmess => this.errMess = errmess);
+    let alert = this.alertCtrl.create({
+      title: 'Confirm Title',
+      message: 'Do you want to delete Favorite ' + id,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Delete cancelled')
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            let loading = this.loadingCtrl.create({
+              content: 'Deleting...'
+            });
+            let toast = this.toastCtrl.create({
+              message: 'Dish ' + id + ' deleted succesfully',
+              duration: 3000
+            });
+
+            loading.present();
+            this.favoriteservice.deleteFavorite(id)
+              .subscribe(favorites => {
+                this.favorites = favorites;
+                loading.dismiss();
+                toast.present();
+              },
+                errmess => { this.errMess = errmess; loading.dismiss() });
+          }
+        }
+      ]
+    });
+
+    alert.present();
 
     //hide the option button
     item.close();
