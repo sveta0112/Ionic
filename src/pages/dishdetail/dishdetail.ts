@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController, ActionSheetController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, ActionSheetController, ModalController } from 'ionic-angular';
 import { Dish } from '../../shared/dish';
 import { Comment } from '../../shared/comment';
 import { FavoriteProvider } from '../../providers/favorite/favorite';
+import { CommentPage } from '../../pages/comment/comment';
 /**
  * Generated class for the DishdetailPage page.
  *
@@ -28,6 +29,7 @@ export class DishdetailPage {
     private favoriteservice: FavoriteProvider,
     private toastCtrl: ToastController,
     private actionSheetCtrl: ActionSheetController,
+    private modalCtrl: ModalController,
     @Inject('BaseURL') private BaseURL) {
       //navparameter which was pushed in by menu component will be retrieved by dishdetail page(line 39 menu.ts)
       this.dish = navParams.get('dish');
@@ -82,8 +84,16 @@ export class DishdetailPage {
   }
 
   openCommentModal() {
+    let modal = this.modalCtrl.create(CommentPage);
+    //onDidDismiss receiving data from dismiss() function of Comment Page
+    modal.onDidDismiss(comment => {
+      //{author: "sadasdasd",comment: "asdasdasd",date: "2019-11-21T21:06:01.010Z",rating: 5}
+      console.log('Comment from dishdetail', comment);
+      if(comment) {
+        this.dish.comments.push(comment);
+      }
+    });
+    modal.present();
 
   }
-
-
 }
